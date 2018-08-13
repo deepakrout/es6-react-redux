@@ -1,5 +1,53 @@
 import * as types from './actionTypes';
+import courseApi from '../api/mockCourseApi';
 
-export function createCourse(course){
-    return { type: types.CREATE_COURSE, course };
+export function createCourse(course) {
+    return {
+        type: types.CREATE_COURSE,
+        course
+    };
+}
+
+export function loadCourseSuccess(courses) {
+    return {
+        type: types.LOAD_COURSES_SUCCESS,
+        courses
+    };
+}
+
+export function loadCourses() {
+    return function (dispatch) {
+        return courseApi.getAllCourses().then(course => {
+            dispatch(loadCourseSuccess(course));
+        }).catch(error => {
+            throw (error);
+        });
+    };
+}
+
+export function createCourseSuccess(course) {
+    return {
+        type: types.CREATE_COURSE_SUCCESS,
+        course
+    };
+}
+
+export function updateCourseSuccess(course) {
+    return {
+        type: types.UPDATE_COURSE_SUCCESS,
+        course
+    };
+}
+
+export function saveCourse(course) {
+    return function (dispatch, getState) {
+        // dispatch(beginAjaxCall());
+        return courseApi.saveCourse(course).then(course => {
+            course.id ? dispatch(updateCourseSuccess(course)) :
+                dispatch(createCourseSuccess(course));
+        }).catch(error => {
+            //dispatch(ajaxCallError(error));
+            throw (error);
+        });
+    };
 }
